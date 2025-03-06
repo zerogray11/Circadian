@@ -26,6 +26,32 @@ const StepByStepQuestionnaire = () => {
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   const navigate = useNavigate();
 
+  // Helper function to convert 12-hour time to 24-hour format
+  const convertTo24HourFormat = (time, period) => {
+    let [hours, minutes] = time.split(':');
+    hours = parseInt(hours, 10);
+
+    if (period === 'PM' && hours !== 12) {
+      hours += 12;
+    }
+    if (period === 'AM' && hours === 12) {
+      hours = 0;
+    }
+
+    return `${hours}:${minutes}`;
+  };
+
+  // Helper function to convert 24-hour time to 12-hour format
+  const convertTo12HourFormat = (time) => {
+    let [hours, minutes] = time.split(':');
+    hours = parseInt(hours, 10);
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12; // Convert 0 to 12 for AM
+
+    return `${hours}:${minutes} ${period}`;
+  };
+
   // Define questions
   const questions = [
     {
@@ -82,38 +108,20 @@ const StepByStepQuestionnaire = () => {
     {
       id: 'wakeTime',
       question: 'What time would you prefer to wake up if you had no obligations?',
-      type: 'select',
-      options: [
-        { value: 5, label: 'Before 6 AM' },
-        { value: 4, label: '6–7 AM' },
-        { value: 3, label: '7–8 AM' },
-        { value: 2, label: '8–9 AM' },
-        { value: 1, label: 'After 9 AM' },
-      ],
+      type: 'time',
+      placeholder: 'Select your wake time',
     },
     {
       id: 'sleepTime',
       question: 'What time would you prefer to go to sleep if you were free to plan?',
-      type: 'select',
-      options: [
-        { value: 5, label: 'Before 9 PM' },
-        { value: 4, label: '9–10 PM' },
-        { value: 3, label: '10–11 PM' },
-        { value: 2, label: '11 PM–Midnight' },
-        { value: 1, label: 'After Midnight' },
-      ],
+      type: 'time',
+      placeholder: 'Select your sleep time',
     },
     {
       id: 'bestTime',
       question: 'At what time of day do you feel your best mentally and physically?',
-      type: 'select',
-      options: [
-        { value: 5, label: 'Early morning' },
-        { value: 4, label: 'Late morning' },
-        { value: 3, label: 'Afternoon' },
-        { value: 2, label: 'Evening' },
-        { value: 1, label: 'Late night' },
-      ],
+      type: 'time',
+      placeholder: 'Select your best time',
     },
     {
       id: 'wakeDifficulty',
@@ -130,14 +138,8 @@ const StepByStepQuestionnaire = () => {
     {
       id: 'mentalWorkTime',
       question: 'If you had to do 2 hours of hard mental work, when would you prefer to do it?',
-      type: 'select',
-      options: [
-        { value: 5, label: '6–8 AM' },
-        { value: 4, label: '8–10 AM' },
-        { value: 3, label: '10 AM–2 PM' },
-        { value: 2, label: '2–5 PM' },
-        { value: 1, label: '5 PM or later' },
-      ],
+      type: 'time',
+      placeholder: 'Select your mental work time',
     },
   ];
 
@@ -147,6 +149,15 @@ const StepByStepQuestionnaire = () => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  // Handle time input changes
+  const handleTimeChange = (name, time, period) => {
+    const time24Hour = convertTo24HourFormat(time, period);
+    setFormData((prev) => ({
+      ...prev,
+      [name]: time24Hour,
     }));
   };
 
@@ -273,6 +284,20 @@ const StepByStepQuestionnaire = () => {
           
           <div className="space-y-4">
             {/* Dynamic input based on question type */}
+            {currentQuestion.type === 'text' && (
+              <div className="relative">
+                <input
+                  type="text"
+                  name={currentQuestion.id}
+                  value={formData[currentQuestion.id]}
+                  onChange={handleChange}
+                  placeholder={currentQuestion.placeholder}
+                  required
+                  className="w-full p-4 text-lg border-2 border-blue-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                />
+              </div>
+            )}
+            
             {currentQuestion.type === 'number' && (
               <div className="relative">
                 <input
@@ -307,6 +332,26 @@ const StepByStepQuestionnaire = () => {
                     {option.label}
                   </div>
                 ))}
+              </div>
+            )}
+
+            {currentQuestion.type === 'time' && (
+              <div className="flex items-center gap-3">
+                <input
+                  type="time"
+                  name={currentQuestion.id}
+                  value={formData[currentQuestion.id]}
+                  onChange={handleChange}
+                  required
+                  className="w-full p-4 text-lg border-2 border-blue-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                />
+                <select
+                  onChange={(e) => handleTimeChange(currentQuestion.id, formData[currentQuestion.id], e.target.value)}
+                  className="p-4 border-2 border-blue-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                >
+                  <option value="AM">AM</option>
+                  <option value="PM">PM</option>
+                </select>
               </div>
             )}
           </div>

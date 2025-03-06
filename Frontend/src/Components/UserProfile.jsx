@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { auth, db, signOut } from './firebase'; // Import signOut
+import { auth, db, signOut } from './firebase';
 import { User, Moon, Sun, Activity, Target, Clock, Brain, Scale, Ruler, Calendar, Edit, Check, X, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
-import { onAuthStateChanged } from 'firebase/auth'; // Import onAuthStateChanged
+import { useNavigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const UserProfile = () => {
   const [userData, setUserData] = useState(null);
@@ -23,19 +23,24 @@ const UserProfile = () => {
     mentalWorkTime: '',
   });
 
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
-  // Monitor authentication state
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        // User is not authenticated, redirect to sign-in page
-        navigate('/');
-      }
-    });
+  // Helper function to convert 24-hour time to 12-hour format
+  const convertTo12HourFormat = (time) => {
+    if (!time) return 'Not set';
+    
+    try {
+      let [hours, minutes] = time.split(':');
+      hours = parseInt(hours, 10);
 
-    return () => unsubscribe(); // Cleanup listener on unmount
-  }, [navigate]);
+      const period = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12; // Convert 0 to 12 for AM
+
+      return `${hours}:${minutes} ${period}`;
+    } catch (e) {
+      return time;
+    }
+  };
 
   // Fetch user data from Firestore
   useEffect(() => {
@@ -133,22 +138,6 @@ const UserProfile = () => {
     }
   };
 
-  // Helper function to format time
-  const formatTime = (timeString) => {
-    if (!timeString) return 'Not set';
-    
-    try {
-      const [hours, minutes] = timeString.split(':');
-      const time = new Date();
-      time.setHours(parseInt(hours, 10));
-      time.setMinutes(parseInt(minutes, 10));
-      
-      return time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch (e) {
-      return timeString;
-    }
-  };
-
   // Render editable fields
   const renderEditableField = (label, name, type = 'text') => (
     <div className="flex items-center gap-3">
@@ -203,12 +192,12 @@ const UserProfile = () => {
       items: [
         { 
           label: 'Sleep Time', 
-          value: formatTime(userData.sleepTime),
+          value: convertTo12HourFormat(userData.sleepTime),
           icon: <Moon className="w-4 h-4 text-purple-500" />
         },
         { 
           label: 'Wake Time', 
-          value: formatTime(userData.wakeTime || 'Not set'),
+          value: convertTo12HourFormat(userData.wakeTime || 'Not set'),
           icon: <Sun className="w-4 h-4 text-purple-500" />
         }
       ]
@@ -221,12 +210,12 @@ const UserProfile = () => {
       items: [
         { 
           label: 'Best Time of Day', 
-          value: userData.bestTime || 'Not set',
+          value: convertTo12HourFormat(userData.bestTime || 'Not set'),
           icon: <Clock className="w-4 h-4 text-indigo-500" />
         },
         { 
           label: 'Mental Work Time', 
-          value: userData.mentalWorkTime || 'Not set',
+          value: convertTo12HourFormat(userData.mentalWorkTime || 'Not set'),
           icon: <Brain className="w-4 h-4 text-indigo-500" />
         },
         { 
