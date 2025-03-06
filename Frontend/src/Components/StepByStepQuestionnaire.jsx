@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
@@ -7,13 +7,17 @@ import { ArrowRight, ArrowLeft, Save, AlertCircle } from 'lucide-react';
 const StepByStepQuestionnaire = () => {
   // Form data state
   const [formData, setFormData] = useState({
+    name: '', 
     age: '',
     height: '',
     weight: '',
     activityLevel: 'sedentary',
-    sleepTime: '',
     fitnessGoal: 'weightLoss',
-    chronotype: 'morningPerson',
+    wakeTime: '',
+    sleepTime: '',
+    bestTime: '',
+    wakeDifficulty: '',
+    mentalWorkTime: '',
   });
 
   // UI state
@@ -24,6 +28,13 @@ const StepByStepQuestionnaire = () => {
 
   // Define questions
   const questions = [
+    {
+      id: 'name',
+      question: 'What is your name?',
+      type: 'text',
+      placeholder: 'Enter your full name',
+      validation: (value) => value.trim().length > 0,
+    },
     {
       id: 'age',
       question: 'How old are you?',
@@ -59,12 +70,6 @@ const StepByStepQuestionnaire = () => {
       ],
     },
     {
-      id: 'sleepTime',
-      question: 'When do you usually go to sleep?',
-      type: 'time',
-      placeholder: 'Select your bedtime',
-    },
-    {
       id: 'fitnessGoal',
       question: 'What is your primary fitness goal?',
       type: 'select',
@@ -75,13 +80,63 @@ const StepByStepQuestionnaire = () => {
       ],
     },
     {
-      id: 'chronotype',
-      question: 'Are you a morning person or a night owl?',
+      id: 'wakeTime',
+      question: 'What time would you prefer to wake up if you had no obligations?',
       type: 'select',
       options: [
-        { value: 'morningPerson', label: 'Morning Person (Early Bird)' },
-        { value: 'nightOwl', label: 'Night Owl' },
-        { value: 'balanced', label: 'Balanced (Neither)' },
+        { value: 5, label: 'Before 6 AM' },
+        { value: 4, label: '6–7 AM' },
+        { value: 3, label: '7–8 AM' },
+        { value: 2, label: '8–9 AM' },
+        { value: 1, label: 'After 9 AM' },
+      ],
+    },
+    {
+      id: 'sleepTime',
+      question: 'What time would you prefer to go to sleep if you were free to plan?',
+      type: 'select',
+      options: [
+        { value: 5, label: 'Before 9 PM' },
+        { value: 4, label: '9–10 PM' },
+        { value: 3, label: '10–11 PM' },
+        { value: 2, label: '11 PM–Midnight' },
+        { value: 1, label: 'After Midnight' },
+      ],
+    },
+    {
+      id: 'bestTime',
+      question: 'At what time of day do you feel your best mentally and physically?',
+      type: 'select',
+      options: [
+        { value: 5, label: 'Early morning' },
+        { value: 4, label: 'Late morning' },
+        { value: 3, label: 'Afternoon' },
+        { value: 2, label: 'Evening' },
+        { value: 1, label: 'Late night' },
+      ],
+    },
+    {
+      id: 'wakeDifficulty',
+      question: 'How easy is it for you to wake up in the morning?',
+      type: 'select',
+      options: [
+        { value: 5, label: 'Very easy' },
+        { value: 4, label: 'Somewhat easy' },
+        { value: 3, label: 'Neutral' },
+        { value: 2, label: 'Somewhat difficult' },
+        { value: 1, label: 'Very difficult' },
+      ],
+    },
+    {
+      id: 'mentalWorkTime',
+      question: 'If you had to do 2 hours of hard mental work, when would you prefer to do it?',
+      type: 'select',
+      options: [
+        { value: 5, label: '6–8 AM' },
+        { value: 4, label: '8–10 AM' },
+        { value: 3, label: '10 AM–2 PM' },
+        { value: 2, label: '2–5 PM' },
+        { value: 1, label: '5 PM or later' },
       ],
     },
   ];
@@ -117,6 +172,22 @@ const StepByStepQuestionnaire = () => {
     }
   };
 
+  // Calculate chronotype
+  const calculateChronotype = (formData) => {
+    const scores = [
+      formData.wakeTime,
+      formData.sleepTime,
+      formData.bestTime,
+      formData.wakeDifficulty,
+      formData.mentalWorkTime,
+    ];
+    const totalScore = scores.reduce((sum, score) => sum + score, 0);
+
+    if (totalScore >= 20) return 'Morning Type (Lark)';
+    if (totalScore >= 15) return 'Intermediate Type';
+    return 'Evening Type (Owl)';
+  };
+
   // Show notification
   const showNotification = (message, type = 'info') => {
     setNotification({ show: true, message, type });
@@ -137,15 +208,24 @@ const StepByStepQuestionnaire = () => {
         throw new Error('User not authenticated');
       }
 
+      // Calculate chronotype
+      const chronotype = calculateChronotype(formData);
+
       // Process data for Firestore
       const processedData = {
+        name: formData.name, 
         age: parseInt(formData.age),
         height: parseFloat(formData.height),
         weight: parseFloat(formData.weight),
         activityLevel: formData.activityLevel,
-        sleepTime: formData.sleepTime,
         fitnessGoal: formData.fitnessGoal,
-        chronotype: formData.chronotype,
+        wakeTime: formData.wakeTime,
+        sleepTime: formData.sleepTime,
+        bestTime: formData.bestTime,
+        wakeDifficulty: formData.wakeDifficulty,
+        mentalWorkTime: formData.mentalWorkTime,
+        chronotype,
+        createdAt: new Date().toISOString(),
       };
 
       // Save questionnaire data to Firestore
@@ -158,7 +238,6 @@ const StepByStepQuestionnaire = () => {
       setTimeout(() => {
         navigate('/profile');
       }, 1500);
-      
     } catch (error) {
       console.error('Error saving data:', error);
       setError(error.message);
@@ -229,17 +308,6 @@ const StepByStepQuestionnaire = () => {
                   </div>
                 ))}
               </div>
-            )}
-            
-            {currentQuestion.type === 'time' && (
-              <input
-                type="time"
-                name={currentQuestion.id}
-                value={formData[currentQuestion.id]}
-                onChange={handleChange}
-                required
-                className="w-full p-4 text-lg border-2 border-blue-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
-              />
             )}
           </div>
         </div>
