@@ -147,7 +147,7 @@ const UserProfile = () => {
         name={name}
         value={formData[name] || ''}
         onChange={handleChange}
-        className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+        className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600"
       />
     </div>
   );
@@ -156,83 +156,83 @@ const UserProfile = () => {
   const profileCards = userData ? [
     {
       title: 'Personal',
-      icon: <User className="w-6 h-6 text-blue-500" />,
-      color: 'bg-blue-50',
-      borderColor: 'border-blue-200',
+      icon: <User className="w-6 h-6 text-indigo-700" />,
+      color: 'bg-indigo-50',
+      borderColor: 'border-indigo-300',
       items: [
-        { label: 'Name', value: userData.name || 'Not set', icon: <User className="w-4 h-4 text-blue-500" /> },
-        { label: 'Age', value: `${userData.age} years`, icon: <Calendar className="w-4 h-4 text-blue-500" /> },
-        { label: 'Height', value: `${userData.height} cm`, icon: <Ruler className="w-4 h-4 text-blue-500" /> },
-        { label: 'Weight', value: `${userData.weight} kg`, icon: <Scale className="w-4 h-4 text-blue-500" /> }
+        { label: 'Name', value: userData.name || 'Not set', icon: <User className="w-4 h-4 text-indigo-700" /> },
+        { label: 'Age', value: `${userData.age} years`, icon: <Calendar className="w-4 h-4 text-indigo-700" /> },
+        { label: 'Height', value: `${userData.height} cm`, icon: <Ruler className="w-4 h-4 text-indigo-700" /> },
+        { label: 'Weight', value: `${userData.weight} kg`, icon: <Scale className="w-4 h-4 text-indigo-700" /> }
       ]
     },
     {
       title: 'Activity',
-      icon: <Activity className="w-6 h-6 text-green-500" />,
-      color: 'bg-green-50',
-      borderColor: 'border-green-200',
+      icon: <Activity className="w-6 h-6 text-indigo-700" />,
+      color: 'bg-indigo-50',
+      borderColor: 'border-indigo-300',
       items: [
         { 
           label: 'Level', 
           value: formatActivityLevel(userData.activityLevel),
-          icon: <Activity className="w-4 h-4 text-green-500" />
+          icon: <Activity className="w-4 h-4 text-indigo-700" />
         },
         { 
           label: 'Goal', 
           value: formatFitnessGoal(userData.fitnessGoal),
-          icon: <Target className="w-4 h-4 text-green-500" />
+          icon: <Target className="w-4 h-4 text-indigo-700" />
         }
       ]
     },
     {
       title: 'Circadian Rhythm',
-      icon: <Moon className="w-6 h-6 text-purple-500" />,
-      color: 'bg-purple-50',
-      borderColor: 'border-purple-200',
+      icon: <Moon className="w-6 h-6 text-indigo-700" />,
+      color: 'bg-indigo-50',
+      borderColor: 'border-indigo-300',
       items: [
         { 
           label: 'Sleep Time', 
           value: convertTo12HourFormat(userData.sleepTime),
-          icon: <Moon className="w-4 h-4 text-purple-500" />
+          icon: <Moon className="w-4 h-4 text-indigo-700" />
         },
         { 
           label: 'Wake Time', 
           value: convertTo12HourFormat(userData.wakeTime || 'Not set'),
-          icon: <Sun className="w-4 h-4 text-purple-500" />
+          icon: <Sun className="w-4 h-4 text-indigo-700" />
         }
       ]
     },
     {
       title: 'Productivity',
-      icon: <Brain className="w-6 h-6 text-indigo-500" />,
+      icon: <Brain className="w-6 h-6 text-indigo-700" />,
       color: 'bg-indigo-50',
-      borderColor: 'border-indigo-200',
+      borderColor: 'border-indigo-300',
       items: [
         { 
           label: 'Best Time of Day', 
           value: convertTo12HourFormat(userData.bestTime || 'Not set'),
-          icon: <Clock className="w-4 h-4 text-indigo-500" />
+          icon: <Clock className="w-4 h-4 text-indigo-700" />
         },
         { 
           label: 'Mental Work Time', 
           value: convertTo12HourFormat(userData.mentalWorkTime || 'Not set'),
-          icon: <Brain className="w-4 h-4 text-indigo-500" />
+          icon: <Brain className="w-4 h-4 text-indigo-700" />
         },
         { 
           label: 'Wake Difficulty', 
           value: userData.wakeDifficulty || 'Not set',
-          icon: <Sun className="w-4 h-4 text-indigo-500" />
+          icon: <Sun className="w-4 h-4 text-indigo-700" />
         }
       ]
     }
   ] : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-indigo-200 p-4 sm:p-6 md:p-8">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
-          <div className="p-6 bg-blue-600 text-white">
+          <div className="p-6 bg-indigo-800 text-white">
             <h1 className="text-2xl font-bold">Your Fitness Profile</h1>
             <p className="mt-1 opacity-90">View and manage your personal information</p>
           </div>
@@ -243,14 +243,14 @@ const UserProfile = () => {
               <div className="flex gap-2">
                 <button 
                   onClick={handleSave}
-                  className="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                  className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                 >
                   <Check className="w-4 h-4" />
                   Save
                 </button>
                 <button 
                   onClick={handleCancel}
-                  className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                  className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                 >
                   <X className="w-4 h-4" />
                   Cancel
@@ -259,7 +259,7 @@ const UserProfile = () => {
             ) : (
               <button 
                 onClick={() => setEditMode(true)}
-                className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+                className="flex items-center gap-2 bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 transition-colors"
               >
                 <Edit className="w-4 h-4" />
                 Edit Profile
@@ -267,7 +267,7 @@ const UserProfile = () => {
             )}
             <button 
               onClick={handleSignOut}
-              className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+              className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
             >
               <LogOut className="w-4 h-4" />
               Sign Out
@@ -278,12 +278,12 @@ const UserProfile = () => {
         {loading ? (
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">
             <div className="animate-pulse flex flex-col items-center">
-              <div className="rounded-full bg-blue-200 h-16 w-16 mb-4"></div>
-              <div className="h-4 bg-blue-200 rounded w-1/3 mb-3"></div>
-              <div className="h-3 bg-blue-100 rounded w-1/4 mb-6"></div>
+              <div className="rounded-full bg-indigo-200 h-16 w-16 mb-4"></div>
+              <div className="h-4 bg-indigo-200 rounded w-1/3 mb-3"></div>
+              <div className="h-3 bg-indigo-100 rounded w-1/4 mb-6"></div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-24 bg-blue-50 rounded-lg"></div>
+                  <div key={i} className="h-24 bg-indigo-50 rounded-lg"></div>
                 ))}
               </div>
             </div>
@@ -292,7 +292,7 @@ const UserProfile = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {editMode ? (
               <div className="bg-white rounded-xl shadow-lg p-6 md:col-span-2">
-                <h2 className="text-xl font-bold mb-4">Edit Your Profile</h2>
+                <h2 className="text-xl font-bold mb-4 text-indigo-900">Edit Your Profile</h2>
                 <div className="space-y-4">
                   {renderEditableField('Name', 'name')}
                   {renderEditableField('Age', 'age', 'number')}
@@ -309,7 +309,7 @@ const UserProfile = () => {
                 >
                   <div className={`p-5 ${card.color} flex items-center gap-3`}>
                     {card.icon}
-                    <h2 className="font-bold text-gray-800">{card.title}</h2>
+                    <h2 className="font-bold text-indigo-900">{card.title}</h2>
                   </div>
                   <div className="p-5">
                     <ul className="space-y-4">
@@ -318,7 +318,7 @@ const UserProfile = () => {
                           <div className="mr-3">{item.icon}</div>
                           <div className="flex-1">
                             <p className="text-sm text-gray-500">{item.label}</p>
-                            <p className="font-medium">{item.value || 'Not set'}</p>
+                            <p className="font-medium text-gray-800">{item.value || 'Not set'}</p>
                           </div>
                         </li>
                       ))}
@@ -332,7 +332,7 @@ const UserProfile = () => {
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">
             <h3 className="text-xl font-bold text-gray-700 mb-2">No Profile Data Found</h3>
             <p className="text-gray-600 mb-6">Please complete the questionnaire to see your profile.</p>
-            <button className="bg-blue-600 text-white font-medium py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors">
+            <button className="bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg hover:bg-indigo-800 transition-colors">
               Go to Questionnaire
             </button>
           </div>

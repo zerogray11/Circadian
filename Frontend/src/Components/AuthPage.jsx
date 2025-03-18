@@ -75,10 +75,10 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-blue-100 p-4">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-indigo-50 to-indigo-200 p-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 ease-in-out">
         {/* Header */}
-        <div className="p-6 bg-blue-600 text-white text-center">
+        <div className="p-6 bg-indigo-800 text-white text-center">
           <h2 className="text-2xl font-bold">Circadian Fitness Planner</h2>
           <p className="mt-2 opacity-90">
             {isLogin ? "Welcome back to your wellness journey" : "Start your path to optimal health"}
@@ -91,8 +91,8 @@ const AuthPage = () => {
             onClick={() => setIsLogin(true)}
             className={`flex items-center justify-center space-x-2 flex-1 py-4 font-medium transition-colors ${
               isLogin 
-                ? 'text-blue-600 border-b-2 border-blue-600' 
-                : 'text-gray-500 hover:text-blue-500'
+                ? 'text-indigo-800 border-b-2 border-indigo-800' 
+                : 'text-gray-500 hover:text-indigo-700'
             }`}
           >
             <LogIn className="w-5 h-5" />
@@ -102,8 +102,8 @@ const AuthPage = () => {
             onClick={() => setIsLogin(false)}
             className={`flex items-center justify-center space-x-2 flex-1 py-4 font-medium transition-colors ${
               !isLogin 
-                ? 'text-blue-600 border-b-2 border-blue-600' 
-                : 'text-gray-500 hover:text-blue-500'
+                ? 'text-indigo-800 border-b-2 border-indigo-800' 
+                : 'text-gray-500 hover:text-indigo-700'
             }`}
           >
             <UserPlus className="w-5 h-5" />
@@ -122,7 +122,7 @@ const AuthPage = () => {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email"
                 required
-                className="w-full p-4 pl-10 text-gray-800 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full p-4 pl-10 text-gray-800 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-600 transition-colors"
               />
             </div>
             
@@ -134,7 +134,7 @@ const AuthPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Password"
                 required
-                className="w-full p-4 pl-10 text-gray-800 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                className="w-full p-4 pl-10 text-gray-800 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-indigo-600 transition-colors"
               />
             </div>
           </div>
@@ -142,7 +142,7 @@ const AuthPage = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full p-4 rounded-lg font-medium text-white bg-blue-600 hover:bg-blue-700 transition-colors ${
+            className={`w-full p-4 rounded-lg font-medium text-white bg-indigo-700 hover:bg-indigo-800 transition-colors ${
               isLoading ? 'opacity-70 cursor-not-allowed' : ''
             }`}
           >
@@ -154,7 +154,7 @@ const AuthPage = () => {
         <div className="text-center p-6 border-t border-gray-200">
           <a 
             href="#" 
-            className="text-blue-600 hover:text-blue-800 transition-colors"
+            className="text-indigo-700 hover:text-indigo-900 transition-colors"
           >
             {isLogin ? 'Forgot Password?' : 'Already have an account?'}
           </a>
@@ -168,7 +168,7 @@ const AuthPage = () => {
             ? 'bg-red-600 text-white' 
             : notification.type === 'success'
               ? 'bg-green-600 text-white'
-              : 'bg-blue-600 text-white'
+              : 'bg-indigo-700 text-white'
         } transition-all duration-300 ease-in-out animate-fade-in z-50`}>
           {notification.type === 'error' && <AlertCircle className="w-5 h-5" />}
           <p>{notification.message}</p>
