@@ -3,7 +3,7 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { useNavigate } from 'react-router-dom';
 import CircadianVisualization from './CircadianVisualization';
-import ActivityLog from './ActivityLog';
+import ActivityLog from './DailyLog';
 
 const CircadianFitnessTracker = () => {
   const [userData, setUserData] = useState(null);
@@ -125,16 +125,16 @@ const CircadianFitnessTracker = () => {
       wake: wakeTime,
       sleep: sleepTime,
       meals: [
-        { type: 'Breakfast', time: breakfastTime, icon: 'Utensils' },
-        { type: 'Lunch', time: lunchTime, icon: 'Utensils' },
-        { type: 'Dinner', time: dinnerTime, icon: 'Utensils' },
+        { type: 'Breakfast', time: breakfastTime, icon: 'Utensils', completed: false },
+        { type: 'Lunch', time: lunchTime, icon: 'Utensils', completed: false },
+        { type: 'Dinner', time: dinnerTime, icon: 'Utensils', completed: false },
       ],
       workouts: [
-        { type: 'Workout', time: workoutTime, icon: 'Dumbbell' },
+        { type: 'Workout', time: workoutTime, icon: 'Dumbbell', completed: false },
       ],
       transitions: [
-        { type: 'Wake Up', time: wakeTime, icon: 'Sun' },
-        { type: 'Sleep', time: sleepTime, icon: 'Moon' },
+        { type: 'Wake Up', time: wakeTime, icon: 'Sun', completed: false },
+        { type: 'Sleep', time: sleepTime, icon: 'Moon', completed: false },
       ],
     };
   };
@@ -157,15 +157,33 @@ const CircadianFitnessTracker = () => {
         logEntries: [...(userData.logEntries || []), entryWithTimestamp],
       });
 
-      setUserData({
-        ...userData,
-        logEntries: [...(userData.logEntries || []), entryWithTimestamp],
-      });
+      setUserData((prevUserData) => ({
+        ...prevUserData,
+        logEntries: [...(prevUserData.logEntries || []), entryWithTimestamp],
+      }));
 
       setShowLogForm(false);
       setLogEntry({ type: '', time: '', note: '' });
     } catch (error) {
       console.error('Error logging entry:', error);
+    }
+  };
+
+  // Update activity status in Firestore
+  const updateActivityStatus = async (activityType, newStatus) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) throw new Error('User not authenticated');
+
+      const userRef = doc(db, 'users', user.uid);
+      const updatedActivities = userData.activities.map((activity) =>
+        activity.type === activityType ? { ...activity, completed: newStatus } : activity
+      );
+
+      await updateDoc(userRef, { activities: updatedActivities });
+      setUserData({ ...userData, activities: updatedActivities });
+    } catch (error) {
+      console.error('Error updating activity status:', error);
     }
   };
 
@@ -186,6 +204,7 @@ const CircadianFitnessTracker = () => {
           idealSchedule={calculateIdealSchedule()}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
+          updateActivityStatus={updateActivityStatus}
         />
         <ActivityLog
           userData={userData}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db, signOut } from './firebase';
-import { User, Moon, Sun, Activity, Target, Clock, Brain, Scale, Ruler, Calendar, Edit, Check, X, LogOut } from 'lucide-react';
+import { User, Moon, Sun, Activity, Target, Clock, Brain, Scale, Ruler, Calendar, Edit, Check, X, LogOut, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 
@@ -22,6 +22,7 @@ const UserProfile = () => {
     wakeDifficulty: '',
     mentalWorkTime: '',
   });
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
   const navigate = useNavigate();
 
@@ -93,10 +94,12 @@ const UserProfile = () => {
 
       setUserData(formData); // Update local state
       setEditMode(false); // Exit edit mode
-      alert('Profile updated successfully!');
+      setNotification({ show: true, message: 'Profile updated successfully!', type: 'success' });
+      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile.');
+      setNotification({ show: true, message: 'Failed to update profile.', type: 'error' });
+      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     }
   };
 
@@ -113,7 +116,8 @@ const UserProfile = () => {
       navigate('/'); // Redirect to AuthPage (login page)
     } catch (error) {
       console.error('Error signing out:', error);
-      alert('Failed to sign out.');
+      setNotification({ show: true, message: 'Failed to sign out.', type: 'error' });
+      setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
     }
   };
 
@@ -141,13 +145,13 @@ const UserProfile = () => {
   // Render editable fields
   const renderEditableField = (label, name, type = 'text') => (
     <div className="flex items-center gap-3">
-      <label className="w-24 text-sm text-gray-500">{label}</label>
+      <label className="w-24 text-sm text-gray-500 font-outfit leading-relaxed">{label}</label>
       <input
         type={type}
         name={name}
         value={formData[name] || ''}
         onChange={handleChange}
-        className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600"
+        className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-600 font-outfit leading-relaxed"
       />
     </div>
   );
@@ -156,7 +160,7 @@ const UserProfile = () => {
   const profileCards = userData ? [
     {
       title: 'Personal',
-      icon: <User className="w-6 h-6 text-indigo-700" />,
+      icon: <User className="w-6 h-6 text-indigo-700 font-outfit" />,
       color: 'bg-indigo-50',
       borderColor: 'border-indigo-300',
       items: [
@@ -168,7 +172,7 @@ const UserProfile = () => {
     },
     {
       title: 'Activity',
-      icon: <Activity className="w-6 h-6 text-indigo-700" />,
+      icon: <Activity className="w-6 h-6 text-indigo-700 font-outfit" />,
       color: 'bg-indigo-50',
       borderColor: 'border-indigo-300',
       items: [
@@ -228,13 +232,13 @@ const UserProfile = () => {
   ] : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-indigo-200 p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen bg-gradient-to-b from-blue-200 via-purple-200 to-pink-200 to-orange-200 p-4 sm:p-6 md:p-8 font-outfit leading-relaxed">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
-          <div className="p-6 bg-indigo-800 text-white">
-            <h1 className="text-2xl font-bold">Your Fitness Profile</h1>
-            <p className="mt-1 opacity-90">View and manage your personal information</p>
+          <div className="p-6 bg-white text-gray-800">
+            <h1 className="text-2xl font-bold text-gray-600 font-outfit">Your Fitness Profile</h1>
+            <p className="mt-1 opacity-90 text-gray-600 font-outfit">View and manage your personal information</p>
           </div>
           
           {/* Edit Mode Toggle and Sign Out Button */}
@@ -243,33 +247,33 @@ const UserProfile = () => {
               <div className="flex gap-2">
                 <button 
                   onClick={handleSave}
-                  className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                  className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
                 >
-                  <Check className="w-4 h-4" />
+                  <Check className="w-4 h-4 text-green-300" />
                   Save
                 </button>
                 <button 
                   onClick={handleCancel}
-                  className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4 text-red-300" />
                   Cancel
                 </button>
               </div>
             ) : (
               <button 
                 onClick={() => setEditMode(true)}
-                className="flex items-center gap-2 bg-indigo-700 text-white px-4 py-2 rounded-lg hover:bg-indigo-800 transition-colors"
+                className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
               >
-                <Edit className="w-4 h-4" />
+                <Edit className="w-4 h-4 text-indigo-300" />
                 Edit Profile
               </button>
             )}
             <button 
               onClick={handleSignOut}
-              className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-lg hover:opacity-90 transition-opacity"
             >
-              <LogOut className="w-4 h-4" />
+              <LogOut className="w-4 h-4 text-red-300 " />
               Sign Out
             </button>
           </div>
@@ -332,12 +336,26 @@ const UserProfile = () => {
           <div className="bg-white rounded-xl shadow-lg p-8 text-center">
             <h3 className="text-xl font-bold text-gray-700 mb-2">No Profile Data Found</h3>
             <p className="text-gray-600 mb-6">Please complete the questionnaire to see your profile.</p>
-            <button className="bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg hover:bg-indigo-800 transition-colors">
+            <button className="bg-black text-white font-medium py-3 px-6 rounded-lg hover:opacity-90 transition-opacity">
               Go to Questionnaire
             </button>
           </div>
         )}
       </div>
+
+      {/* Notification */}
+      {notification.show && (
+        <div className={`fixed bottom-4 right-4 max-w-sm p-4 rounded-lg shadow-lg flex items-center space-x-2 ${
+          notification.type === 'error'
+            ? 'bg-red-600 text-white'
+            : notification.type === 'success'
+              ? 'bg-green-500 text-white'
+              : 'bg-gradient-to-r from-blue-400 to-pink-300 text-white'
+        } transition-all duration-300 ease-in-out animate-fade-in`}>
+          {notification.type === 'error' && <AlertCircle className="w-5 h-5" />}
+          <p>{notification.message}</p>
+        </div>
+      )}
     </div>
   );
 };
