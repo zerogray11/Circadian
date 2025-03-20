@@ -10,7 +10,7 @@ const CircadianVisualization = ({
   idealSchedule,
   activeTab,
   setActiveTab,
-  logs,
+  logs, // Ensure logs are passed as a prop
 }) => {
   const [sunrise, setSunrise] = useState(null);
   const [sunset, setSunset] = useState(null);
@@ -128,8 +128,15 @@ const CircadianVisualization = ({
             <stop offset="0%" stopColor="#60a5fa" />
             <stop offset="100%" stopColor="#c084fc" />
           </linearGradient>
+          <filter id="textGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
         </defs>
-
+    
         {/* Energy Ring */}
         <circle
           cx={centerX}
@@ -142,7 +149,7 @@ const CircadianVisualization = ({
           strokeDasharray={`${circumference * progress} ${circumference * (1 - progress)}`}
           strokeDashoffset={circumference * 0.25}
         />
-
+    
         {/* Achievement Ring */}
         <circle
           cx={centerX}
@@ -155,7 +162,7 @@ const CircadianVisualization = ({
           strokeDasharray={`${circumference * 0.75} ${circumference * 0.25}`} // Placeholder for achievements
           strokeDashoffset={circumference * 0.25}
         />
-
+    
         {/* Center Text */}
         <text
           x={centerX}
@@ -164,18 +171,36 @@ const CircadianVisualization = ({
           fontSize="14"
           fontWeight="600"
           fill="#0f172a"
+          fontFamily="Poppins, sans-serif"
         >
           {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </text>
         <text
           x={centerX}
-          y={centerY + 15}
+          y={centerY + 10} // Adjusted y position to accommodate multiple lines
           textAnchor="middle"
-          fontSize="12"
+          fontSize="10"
           fontWeight="600"
           fill="#1e293b"
+          fontFamily="Orbitron, sans-serif"
+          fontStyle="italic"
+          
         >
-          {getOptimalActivity()}
+          {getOptimalActivity()
+            .split(' ') // Split the text into words
+            .reduce((lines, word, index) => {
+              if (index % 2 === 0) {
+                lines.push(word); // Start a new line every two words
+              } else {
+                lines[lines.length - 1] += ` ${word}`; // Add the word to the current line
+              }
+              return lines;
+            }, [])
+            .map((line, i) => (
+              <tspan x={centerX} dy={i === 0 ? 0 : 18} key={i}>
+                {line}
+              </tspan>
+            ))}
         </text>
       </svg>
     );

@@ -3,24 +3,29 @@ import { useNavigate } from 'react-router-dom';
 import { LogIn, UserPlus, Mail, Lock, AlertCircle } from 'lucide-react';
 import { auth, db, signInWithEmailAndPassword, createUserWithEmailAndPassword, doc, setDoc } from './firebase';
 
+// Cool loading component
+const LoadingSpinner = () => (
+  <div className="fixed inset-0 bg-white/80 backdrop-blur-md flex items-center justify-center z-50">
+    <div className="relative">
+      {/* Outer circle */}
+      <div className="w-16 h-16 border-4 border-blue-200 rounded-full animate-pulse"></div>
+      
+      {/* Inner spinning circle */}
+      <div className="absolute top-0 left-0 w-16 h-16 border-4 border-transparent border-t-blue-500 rounded-full animate-spin"></div>
+      
+      {/* Center dot */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full"></div>
+    </div>
+  </div>
+);
+
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
-  // Show notification
-  const showNotification = (message, type = 'info') => {
-    setNotification({ show: true, message, type });
-    
-    // Hide notification after 3 seconds
-    setTimeout(() => {
-      setNotification({ show: false, message: '', type: '' });
-    }, 3000);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,9 +37,8 @@ const AuthPage = () => {
         // Login with email and password
         await signInWithEmailAndPassword(auth, email, password);
         console.log('User logged in');
-        showNotification('Login successful! Redirecting...', 'success');
         
-        // Redirect after a short delay to show success message
+        // Redirect after a short delay
         setTimeout(() => {
           navigate('/profile');
         }, 1500);
@@ -53,7 +57,6 @@ const AuthPage = () => {
         });
 
         console.log('User data saved to Firestore');
-        showNotification('Account created successfully!', 'success');
         
         // Redirect after a short delay
         setTimeout(() => {
@@ -63,13 +66,6 @@ const AuthPage = () => {
     } catch (error) {
       console.error('Authentication error:', error);
       setError(error.message || 'An error occurred');
-      showNotification(
-        error.message.includes('auth/') 
-          ? error.message.replace('Firebase: Error (auth/', '').replace(').', '')
-          : error.message, 
-        'error'
-      );
-    } finally {
       setIsLoading(false);
     }
   };
@@ -167,17 +163,14 @@ const AuthPage = () => {
         </div>
       </div>
       
-      {/* Notification */}
-      {notification.show && (
-        <div className={`fixed bottom-4 right-4 max-w-sm p-4 rounded-lg shadow-lg flex items-center space-x-2 ${
-          notification.type === 'error' 
-            ? 'bg-red-600 text-white' 
-            : notification.type === 'success'
-              ? 'bg-green-600 text-white'
-              : 'bg-black text-white'
-        } transition-all duration-300 ease-in-out animate-fade-in z-50`}>
-          {notification.type === 'error' && <AlertCircle className="w-5 h-5" />}
-          <p>{notification.message}</p>
+      {/* Cool Loading Component */}
+      {isLoading && <LoadingSpinner />}
+      
+      {/* Error Notification */}
+      {error && (
+        <div className="fixed bottom-4 right-4 max-w-sm p-4 rounded-lg shadow-lg flex items-center space-x-2 bg-red-600 text-white transition-all duration-300 ease-in-out animate-fade-in z-50">
+          <AlertCircle className="w-5 h-5" />
+          <p>{error}</p>
         </div>
       )}
     </div>
